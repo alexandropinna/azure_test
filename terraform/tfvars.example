@@ -1,0 +1,51 @@
+tags = {
+  "env"         = "dev"
+  "owner"       = "Alejandro Pina"
+  "cloud"       = "Azure"
+  "IAC"         = "Terraform"
+  "IAC_Version" = "1.5.7"
+  "project"     = "azure_test"
+  "region"      = "East US"
+}
+
+
+# - azurerm_resource_group variables
+resource_group_name = "azure-beta-resources"
+location            = "West Europe"
+
+# - azurerm_virtual_network variables
+virtual_network_name = "azure-beta-network"
+address_space        = ["10.0.0.0/16"]
+
+# - azurerm_subnet variables
+subnet_name      = "internal"
+address_prefixes = ["10.0.2.0/24"]
+
+# - azurerm_network_security_group variables
+nsg_name = "azure-beta-nsg"
+
+# - azurerm_network_interface variables
+nic_name                      = "azure-beta-nic"
+name_ip_configuration         = "internal"
+private_ip_address_allocation = "Dynamic"
+
+# - azurerm_linux_virtual_machine
+vm_count       = 3
+vm_name        = "azure-beta-vm"
+vm_size        = "Standard_B1s"
+admin_username = "adminuser"
+computer_name  = "azure-beta"
+# vm os_disk variables
+os_disk_caching              = "ReadWrite"
+os_disk_storage_account_type = "Standard_LRS"
+# vm source_image_reference variables
+source_image_reference_publisher = "Debian"
+# source_image_reference_offer     = "UbuntuServer"
+source_image_reference_offer = "debian-11"
+# source_image_reference_sku       = "18.04-LTS"
+source_image_reference_sku     = "11"
+source_image_reference_version = "latest"
+# vm admin_ssh_key
+ssh_public_key_path = "~/.ssh/id_rsa.pub"
+ssh_priv_key_path   = "~/.ssh/id_rsa"
+
