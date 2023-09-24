@@ -1,6 +1,6 @@
 ---
 - name: Deploy Apache
-  hosts: azure-beta-vm-0
+  hosts: azure-epsilon-vm-0
   become: true
 
   tasks:
@@ -18,7 +18,7 @@
           - "80:80"
 
 - name: Deploy .NET
-  hosts: azure-beta-vm-1
+  hosts: azure-epsilon-vm-1
   become: true
 
   tasks:
@@ -35,26 +35,26 @@
         published_ports:
           - "80:80"
 
-- name: Deploy Java
-  hosts: azure-beta-vm-2
-  become: true
+# - name: Deploy Java
+#   hosts: azure-epsilon-vm-2
+#   become: true
 
-  tasks:
-    - name: Pull Docker Image
-      community.docker.docker_image:
-        name: "alex919090/java_test:latest"
-        source: pull
+#   tasks:
+#     - name: Pull Docker Image
+#       community.docker.docker_image:
+#         name: "alex919090/java_test:latest"
+#         source: pull
 
-    - name: Run Docker Container
-      community.docker.docker_container:
-        name: my_java
-        image: alex919090/java_test:latest
-        state: started
-        published_ports:
-          - "80:80"
+#     - name: Run Docker Container
+#       community.docker.docker_container:
+#         name: my_java
+#         image: alex919090/java_test:latest
+#         state: started
+#         published_ports:
+#           - "80:80"
 
 # - name: Deploy Maven
-#   hosts: maven-aws_test-dev-virginia
+#   hosts: azure-epsilon-vm-3
 #   become: true
 
 #   tasks:

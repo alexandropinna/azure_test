@@ -1,93 +1,82 @@
-resource "azurerm_resource_group" "azure-beta" {
-  name     = var.resource_group_name
-  location = var.location
+module "resource_group" {
+  source = "./modules/resource_group"
 
-  tags = var.tags
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  tags                = var.tags
 }
 
-resource "azurerm_virtual_network" "azure-beta" {
-  name                = var.virtual_network_name
-  address_space       = var.address_space
-  location            = azurerm_resource_group.azure-beta.location
-  resource_group_name = azurerm_resource_group.azure-beta.name
+module "virtual_network" {
+  source = "./modules/virtual_network"
 
-  tags = var.tags
+  virtual_network_name = var.virtual_network_name
+  address_space        = var.address_space
+  location             = module.resource_group.location
+  resource_group_name  = module.resource_group.resource_group_name
+  tags                 = var.tags
 }
 
-resource "azurerm_subnet" "azure-beta" {
-  name                 = var.subnet_name
-  resource_group_name  = azurerm_resource_group.azure-beta.name
-  virtual_network_name = azurerm_virtual_network.azure-beta.name
+module "subnet" {
+  source = "./modules/subnet"
+
+  subnet_name          = var.subnet_name
+  resource_group_name  = module.resource_group.resource_group_name
+  virtual_network_name = module.virtual_network.virtual_network_name
   address_prefixes     = var.address_prefixes
 }
 
-resource "azurerm_network_security_group" "azure-beta" {
-  name                = var.nsg_name
-  location            = azurerm_resource_group.azure-beta.location
-  resource_group_name = azurerm_resource_group.azure-beta.name
+module "network_security_group" {
+  source = "./modules/network_security_group"
 
-  tags = var.tags
+  nsg_name            = var.nsg_name
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.resource_group_name
+  tags                = var.tags
 }
 
-resource "azurerm_network_interface" "azure-beta" {
-  count               = var.vm_count
-  name                = "${var.nic_name}-${count.index}"
-  location            = azurerm_resource_group.azure-beta.location
-  resource_group_name = azurerm_resource_group.azure-beta.name
+module "network_interface" {
+  source = "./modules/network_interface"
 
-  ip_configuration {
-    name                          = "${var.name_ip_configuration}-${count.index}"
-    subnet_id                     = azurerm_subnet.azure-beta.id
-    private_ip_address_allocation = var.private_ip_address_allocation
-    public_ip_address_id          = azurerm_public_ip.azure-beta[count.index].id
-  }
-
-  tags = var.tags
+  vm_count                      = var.vm_count
+  nic_name                      = var.nic_name
+  name_ip_configuration         = var.name_ip_configuration
+  location                      = module.resource_group.location
+  resource_group_name           = module.resource_group.resource_group_name
+  subnet_id                     = module.subnet.subnet_id
+  private_ip_address_allocation = var.private_ip_address_allocation
+  public_ip_address_ids         = module.public_ip.public_ip_ids
+  public_ip_addresses           = module.public_ip.public_ip_addresses
+  tags                          = var.tags
 }
 
-resource "azurerm_linux_virtual_machine" "azure-beta" {
-  count               = var.vm_count
-  name                = "${var.vm_name}-${count.index}"
-  resource_group_name = azurerm_resource_group.azure-beta.name
-  location            = azurerm_resource_group.azure-beta.location
-  size                = var.vm_size
-  admin_username      = var.admin_username
+module "virtual_machine" {
+  source = "./modules/virtual_machine"
 
-  computer_name = "${var.computer_name}-${count.index}"
-
-  network_interface_ids = [
-    azurerm_network_interface.azure-beta[count.index].id,
-  ]
-
-  os_disk {
-    caching              = var.os_disk_caching
-    storage_account_type = var.os_disk_storage_account_type
-  }
-
-  source_image_reference {
-    publisher = var.source_image_reference_publisher
-    offer     = var.source_image_reference_offer
-    sku       = var.source_image_reference_sku
-    version   = var.source_image_reference_version
-  }
-
-
-  admin_ssh_key {
-    username   = var.admin_username
-    public_key = file(var.ssh_public_key_path)
-  }
-
-  disable_password_authentication = true
-
-  tags = var.tags
+  vm_count            = var.vm_count
+  vm_name             = var.vm_name
+  computer_name       = var.computer_name
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.resource_group_name
+  network_interface_ids            = module.network_interface.network_interface_ids
+  vm_size                          = var.vm_size
+  admin_username                   = var.admin_username
+  os_disk_caching                  = var.os_disk_caching
+  os_disk_storage_account_type     = var.os_disk_storage_account_type
+  source_image_reference_publisher = var.source_image_reference_publisher
+  source_image_reference_offer     = var.source_image_reference_offer
+  source_image_reference_sku       = var.source_image_reference_sku
+  source_image_reference_version   = var.source_image_reference_version
+  ssh_public_key_path              = var.ssh_public_key_path
+  tags                             = var.tags
 }
 
-resource "azurerm_public_ip" "azure-beta" {
-  count               = var.vm_count
-  name                = "${var.vm_name}-public-ip-${count.index}"
-  location            = azurerm_resource_group.azure-beta.location
-  resource_group_name = azurerm_resource_group.azure-beta.name
-  allocation_method   = "Dynamic"
+module "public_ip" {
+  source = "./modules/public_ip"
 
-  tags = var.tags
+  number_of_ips       = var.vm_count
+  name_prefix         = var.vm_name
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.resource_group_name
+  tags                = var.tags
 }
+

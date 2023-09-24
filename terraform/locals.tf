@@ -1,12 +1,13 @@
 locals {
 
   vm_instances = {
-    for idx, instance in azurerm_linux_virtual_machine.azure-beta :
+    for idx, id in module.virtual_machine.virtual_machine_ids :
     idx => {
-      name      = instance.name
-      public_ip = azurerm_public_ip.azure-beta[idx].ip_address
+      name      = module.virtual_machine.virtual_machine_names[idx]
+      public_ip = module.network_interface.network_interface_public_ips[idx]
     }
   }
+  
 
   maquinas_ini_content = <<-EOT
     [azure]
@@ -17,9 +18,8 @@ locals {
 
   vm_host_vars_content = {
     for idx, instance in local.vm_instances :
-    instance.name => "ansible_host: ${azurerm_linux_virtual_machine.azure-beta[idx].public_ip_addresses[0]}\nansible_user: ${var.admin_username}\nansible_ssh_private_key_file: ${local.ssh_key_path}"
+    instance.name => "ansible_host: ${instance.public_ip}\nansible_user: ${var.admin_username}\nansible_ssh_private_key_file: ${local.ssh_key_path}"
   }
-
 
   host_vars_commands = join("\n", [
     for host, content in local.vm_host_vars_content : "printf '%s' '${content}' > ../ansible/host_vars/${host}.yml"
@@ -35,7 +35,7 @@ resource "local_file" "maquinas_ini" {
     command = "rm -f ../ansible/maquinas.ini"
   }
 
-  depends_on = [azurerm_linux_virtual_machine.azure-beta]
+  depends_on = [module.virtual_machine]
 }
 
 resource "null_resource" "host_vars" {
@@ -55,5 +55,5 @@ resource "null_resource" "host_vars" {
     command = "rm -rf ../ansible/host_vars"
   }
 
-  depends_on = [azurerm_linux_virtual_machine.azure-beta]
+  depends_on = [module.virtual_machine]
 }
