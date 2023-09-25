@@ -1,51 +1,45 @@
+// Define tags to be assigned to resources
 tags = {
-  "env"         = "dev"
-  "owner"       = "Alejandro Pina"
-  "cloud"       = "Azure"
-  "IAC"         = "Terraform"
-  "IAC_Version" = "1.5.7"
-  "project"     = "azure_test"
-  "region"      = "East US"
+  "env"         = "dev"                    // Environment type
+  "owner"       = "Alejandro Pina"         // Owner of the resources
+  "cloud"       = "Azure"                  // Cloud provider
+  "IAC"         = "Terraform"              // Infrastructure as Code tool used
+  "IAC_Version" = "1.5.7"                  // Version of Terraform used
+  "project"     = "azure_test"             // Project name
+  "region"      = "East US"                // Geographic region
 }
 
+// Azure Resource Group variables
+resource_group_name = "azure-beta-resources" // Name of the resource group
+location            = "West Europe"          // Location of the resource group
 
-# - azurerm_resource_group variables
-resource_group_name = "azure-beta-resources"
-location            = "West Europe"
+// Azure Virtual Network variables
+virtual_network_name = "azure-beta-network" // Name of the virtual network
+address_space        = ["10.0.0.0/16"]       // Address space of the virtual network
 
-# - azurerm_virtual_network variables
-virtual_network_name = "azure-beta-network"
-address_space        = ["10.0.0.0/16"]
+// Azure Subnet variables
+subnet_name      = "internal"              // Name of the subnet
+address_prefixes = ["10.0.2.0/24"]         // Address prefixes of the subnet
 
-# - azurerm_subnet variables
-subnet_name      = "internal"
-address_prefixes = ["10.0.2.0/24"]
+// Azure Network Security Group variables
+nsg_name = "azure-beta-nsg"               // Name of the network security group
 
-# - azurerm_network_security_group variables
-nsg_name = "azure-beta-nsg"
+// Azure Network Interface variables
+nic_name                      = "azure-beta-nic"                  // Name of the network interface
+name_ip_configuration         = "internal"                        // Name of the IP configuration
+private_ip_address_allocation = "Dynamic"                         // IP address allocation method
 
-# - azurerm_network_interface variables
-nic_name                      = "azure-beta-nic"
-name_ip_configuration         = "internal"
-private_ip_address_allocation = "Dynamic"
-
-# - azurerm_linux_virtual_machine
-vm_count       = 3
-vm_name        = "azure-beta-vm"
-vm_size        = "Standard_B1s"
-admin_username = "adminuser"
-computer_name  = "azure-beta"
-# vm os_disk variables
-os_disk_caching              = "ReadWrite"
-os_disk_storage_account_type = "Standard_LRS"
-# vm source_image_reference variables
-source_image_reference_publisher = "Debian"
-# source_image_reference_offer     = "UbuntuServer"
-source_image_reference_offer = "debian-11"
-# source_image_reference_sku       = "18.04-LTS"
-source_image_reference_sku     = "11"
-source_image_reference_version = "latest"
-# vm admin_ssh_key
-ssh_public_key_path = "~/.ssh/id_rsa.pub"
-ssh_priv_key_path   = "~/.ssh/id_rsa"
-
+// Azure Linux Virtual Machine variables
+vm_count       = 3                                         // Number of virtual machines
+vm_name        = "azure-beta-vm"                          // Base name of the virtual machines
+vm_size        = "Standard_B1s"                          // Size of the virtual machines
+admin_username = "adminuser"                              // Admin username for the virtual machines
+computer_name  = "azure-beta"                             // Computer name prefix for the virtual machines
+os_disk_caching              = "ReadWrite"                 // Caching option for the OS disk
+os_disk_storage_account_type = "Standard_LRS"             // Storage account type for the OS disk
+source_image_reference_publisher = "Debian"               // Publisher of the source image
+source_image_reference_offer = "debian-11"                // Offer of the source image
+source_image_reference_sku     = "11"                     // SKU of the source image
+source_image_reference_version = "latest"                 // Version of the source image
+ssh_public_key_path = "~/.ssh/id_rsa.pub"                 // Path to the SSH public key
+ssh_priv_key_path   = "~/.ssh/id_rsa"                     // Path to the SSH private key

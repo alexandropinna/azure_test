@@ -1,3 +1,5 @@
+// Initializing the Resource Group module with specified source directory
+// Assigning values for resource group name, location, and tags from variables
 module "resource_group" {
   source = "./modules/resource_group"
 
@@ -6,6 +8,8 @@ module "resource_group" {
   tags                = var.tags
 }
 
+// Initializing the Virtual Network module with specified source directory
+// Assigning values for virtual network name, address space, location, resource group name, and tags from variables and outputs of the Resource Group module
 module "virtual_network" {
   source = "./modules/virtual_network"
 
@@ -16,6 +20,8 @@ module "virtual_network" {
   tags                 = var.tags
 }
 
+// Initializing the Subnet module with specified source directory
+// Assigning values for subnet name, resource group name, virtual network name, and address prefixes from variables and outputs of Resource Group and Virtual Network modules
 module "subnet" {
   source = "./modules/subnet"
 
@@ -25,6 +31,8 @@ module "subnet" {
   address_prefixes     = var.address_prefixes
 }
 
+// Initializing the Network Security Group module with specified source directory
+// Assigning values for NSG name, location, resource group name, and tags from variables and outputs of the Resource Group module
 module "network_security_group" {
   source = "./modules/network_security_group"
 
@@ -34,6 +42,8 @@ module "network_security_group" {
   tags                = var.tags
 }
 
+// Initializing the Network Interface module with specified source directory
+// Assigning values for VM count, NIC name, IP configuration name, location, resource group name, subnet ID, private IP address allocation, public IP address IDs, public IP addresses, and tags from variables and outputs of other modules
 module "network_interface" {
   source = "./modules/network_interface"
 
@@ -49,6 +59,8 @@ module "network_interface" {
   tags                          = var.tags
 }
 
+// Initializing the Virtual Machine module with specified source directory
+// Assigning values for VM count, VM name, computer name, location, resource group name, network interface IDs, VM size, admin username, OS disk caching, OS disk storage account type, source image reference, SSH public key path, and tags from variables and outputs of other modules
 module "virtual_machine" {
   source = "./modules/virtual_machine"
 
@@ -70,6 +82,8 @@ module "virtual_machine" {
   tags                             = var.tags
 }
 
+// Initializing the Public IP module with specified source directory
+// Assigning values for number of IPs, name prefix, location, resource group name, and tags from variables and outputs of the Resource Group module
 module "public_ip" {
   source = "./modules/public_ip"
 
@@ -79,4 +93,3 @@ module "public_ip" {
   resource_group_name = module.resource_group.resource_group_name
   tags                = var.tags
 }
-
